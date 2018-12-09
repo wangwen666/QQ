@@ -5,6 +5,8 @@ import App from './App'
 import Login from '@/pages/login/index'
 import router from './router'
 
+import './index.less'
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
