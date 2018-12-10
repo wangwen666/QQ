@@ -1,11 +1,12 @@
 <template>
 
   <div id="container">
-    <h1>PPP</h1>
+    <img>
+    <h1 style="text-align: center">PPP</h1>
 
     <group ref="_group">
-      <x-input name="user" required type="text" placeholder="用户名" v-model="inputText.name"></x-input>
-      <x-input name="password" required type="password" placeholder="密码" v-model="inputText.password"></x-input>
+      <x-input name="username" required type="text" placeholder="用户名" ></x-input>
+      <x-input name="password" required type="password" placeholder="密码"></x-input>
 
       <x-button type="primary" @click.native="login">登录</x-button>
 
@@ -52,15 +53,15 @@
      }
     },
     mounted () {
-      console.log(this.$refs._group.$children);
+      // console.log(this.$refs._group.$children);
     },
     methods: {
       login: function(){
 
-        this.$refs._group.$children.map((child, index) => {
-          console.log(child.name);
-        })
-        console.log(this.inputText['name']);
+        // this.$refs._group.$children.map((child, index) => {
+        //   console.log(child.name);
+        // })
+        // console.log(this.inputText['name']);
 
         if(this._validate()){
           return;
@@ -70,13 +71,18 @@
 
         axios.post(API.USER.LOGIN, params)
           .then(function(res){
+            if(res.code === "2000200") {
+              alert('登录成功 跳转我在做....');
+            } else {
+              this.$vux.alert.show({
+                title: "提示",
+                content: "用户名或密码错误"
+              });
+            }
 
           })
           .catch(() => {
-            this.$vux.alert.show({
-            title: "提示",
-            content: "用户名或密码错误"
-          });
+
           })
 
 
@@ -96,8 +102,10 @@
         const arr = this.$refs._group.$children;
         let obj ={};
         arr.map((child) => {
-          obj[child.name] = obj[child.value];
+          console.log(child.currentValue);
+          obj[child.name] = child.currentValue;
         })
+        console.log('obj', obj);
 
         return obj;
 

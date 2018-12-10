@@ -10,7 +10,33 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      "/user": {
+        "target": "http://172.18.37.197:8090/springboot-user/user/",
+        "changeOrigin": true,
+        "pathRewrite": {
+          "^/user": "/"
+        }
+      },
+      "/hive": {
+        "target": "http://localhost:18080/hive/",
+        "pathRewrite": {
+          "^/hive": "/"
+        }
+      },
+      "/bi": {
+        "target": "http://localhost:18080/bi/",
+        "pathRewrite": {
+          "^/bi": "/"
+        }
+      },
+      "/etl": {
+        "target": "http://localhost:18080/etl/",
+        "pathRewrite": {
+          "^/etl": "/"
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

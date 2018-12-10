@@ -3,11 +3,11 @@
       <div>
         <tab :line-width=2 active-color='#fc378c' v-model="index">
           <tab-item class="vux-center" :selected="index === 0" v-for="(item, index) in list"
-                    @click="demo2 = item" :key="index">
+                    @click="index = item" :key="index">
             {{item}}
           </tab-item>
         </tab>
-        <swiper v-model="index" height="100px" :show-dots="false">
+        <swiper  height="100px" :show-dots="false">
           <swiper-item v-for="(item, index) in list" :key="index">
             <div class="tab-swiper vux-center">{{item}} Container</div>
           </swiper-item>
@@ -22,6 +22,24 @@
   import { Tab, TabItem, Swiper, SwiperItem } from 'vux'
 
   const list = () => ['好友', '群聊', '设备', '通讯录', '设备'];
+  const list1 = () => [{
+    sum: 10,
+    inline: 5,
+    titie: '特别关心'
+  }, {
+    sum: 11,
+    inline: 5,
+    titie: '我的好友'
+  }, {
+    sum: 11,
+    inline: 5,
+    titie: '朋友'
+  }, {
+    sum: 11,
+    inline: 5,
+    titie: '家人'
+  }];
+
 
 
   export default {
@@ -34,7 +52,9 @@
     },
     data: function () {
       return {
-        list: list()
+        list: list(),
+        list1: list1(),
+        index: 0
       }
     }
   };

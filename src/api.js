@@ -2,11 +2,11 @@
  * Created by ww on 2018/12/8.
  */
 
-const app = '';
+const USER_HOST = '';
 
 const API = {
   USER: {
-    LOGIN: ''
+    LOGIN: `${USER_HOST}user/login`
   }
 }
 
