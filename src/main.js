@@ -4,33 +4,36 @@ import Vue from 'vue'
 import App from './App'
 import Login from '@/pages/login/index'
 import router from './router'
-
+import './reset.css'
+import '@/font/iconfont.css'
 import './index.less'
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 
-const hash = window.location.hash;
-if (hash === '#/login') {
-  new Vue({
-    el: '#app',
-    components: { Login },
-    template: '<login/>'
-  })
 
-} else if (hash === '#/register') {
 
-} else if ( hash === '#/findPassword') {
+let isLogin = true;
 
-} else {
+router.beforeEach((to, from, next) => {
+  if (isLogin) {
+    next();
+  } else {
+    if (to.path === '/login') { //这就是跳出循环的关键
+      next()
+    } else {
+      next({path: '/login'})
+    }
+  }
 
-  new Vue({
-    el: '#app',
-    router,
-    components: { App },
-    template: '<App/>'
-  })
+})
 
-}
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+})
+
 

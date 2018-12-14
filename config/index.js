@@ -24,10 +24,10 @@ module.exports = {
           "^/hive": "/"
         }
       },
-      "/bi": {
-        "target": "http://localhost:18080/bi/",
+      "/contact": {
+        "target": "http://172.18.37.197:8090/springboot-user/",
         "pathRewrite": {
-          "^/bi": "/"
+          "^/contact": "/"
         }
       },
       "/etl": {

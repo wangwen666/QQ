@@ -1,23 +1,22 @@
 <template>
 
   <div id="container">
-    <img>
+    <img width="100" height="100" style="margin: 90px auto 0 auto; display: block" :src="Img">
     <h1 style="text-align: center">PPP</h1>
 
     <group ref="_group">
-      <x-input name="username" required type="text" placeholder="用户名" ></x-input>
-      <x-input name="password" required type="password" placeholder="密码"></x-input>
-
-      <x-button type="primary" @click.native="login">登录</x-button>
-
-      <a class="pull-left" href="#/findPassword">忘记密码?</a>
-      <a class="pull-right" href="#/register">注册</a>
-
-      <div v-transfer-dom>
-        <alert v-model="show"  @on-show="onShow" @on-hide="onHide"></alert>
-      </div>
-
+      <x-input  ref="_group1" :is-type="selfValid" required name="username"  type="text" placeholder="用户名" ></x-input>
+      <x-input :is-type="selfValid" name="password" required  type="password" placeholder="密码"></x-input>
     </group>
+
+    <x-button style="margin: 20px 0" type="primary" @click.native="login">登录</x-button>
+
+    <a class="pull-left" href="#/findPassword">忘记密码?</a>
+    <a class="pull-right" href="#/register">注册</a>
+
+    <div v-transfer-dom>
+      <alert></alert>
+    </div>
 
 
   </div>
@@ -26,10 +25,11 @@
 
 <script>
   import Vue from 'vue'
-  import { Group , XInput, XButton, Alert, TransferDomDirective as TransferDom } from 'vux';
-  import {AlertPlugin,LoadingPlugin,ConfirmPlugin,ToastPlugin} from 'vux';
-  import axios from 'axios';
-  import API from './../../api.js';
+  import { Group, XInput, XButton, Alert, TransferDomDirective as TransferDom } from 'vux';
+  import {AlertPlugin} from 'vux';
+  import Axios from 'axios';
+  import API from './../../configs/api.js';
+  import STATUS from './../../configs/status.js';
 
   Vue.use(AlertPlugin);
 
@@ -46,10 +46,16 @@
     },
     data: function (){
      return {
-       inputText: {
-         name: '',
-         password:''
-       }
+       Img: require('./../../../static/QQ.png'),
+       selfValid: function (value) {
+         console.log(value);
+         return {
+           valid: value.length > 4,
+           msg: '输入错误'
+         }
+
+       },
+
      }
     },
     mounted () {
@@ -58,55 +64,57 @@
     methods: {
       login: function(){
 
-        // this.$refs._group.$children.map((child, index) => {
-        //   console.log(child.name);
-        // })
-        // console.log(this.inputText['name']);
-
-        if(this._validate()){
+        if(!this._validate()){
           return;
         }
 
         const params = this._getFormParams();
 
-        axios.post(API.USER.LOGIN, params)
-          .then(function(res){
-            if(res.code === "2000200") {
-              alert('登录成功 跳转我在做....');
-            } else {
-              this.$vux.alert.show({
-                title: "提示",
-                content: "用户名或密码错误"
-              });
-            }
+        this.$router.push(
+          { path: "/message" }
+        );
 
-          })
-          .catch(() => {
-
-          })
-
-
+        // Axios.post(API.USER.LOGIN, params)
+        //   .then( (res) => {
+        //     res = res.data;
+        //     if(res.code === STATUS.CODE.S200) {
+        //       this.$router.push(
+        //         { path: "/message" }
+        //         );
+        //     } else {
+        //       this.$vux.alert.show({
+        //         title: "提示",
+        //         content: res.msg || "用户名或密码错误"
+        //       });
+        //     }
+        //   })
+        //   .catch(() => {
+        //
+        //   })
       },
 
-      _validate: function(){
+
+      _validate: function () {
+
         const arr = this.$refs._group.$children;
-        for(var i in arr){
-          if(!arr[i].value){
-            return false;
+
+        // console.log(this.$refs._group1.valid);
+
+        for(let i in arr){
+          if(!arr[i].currentValue){
+            return false
           }
         }
-        return true;
+        return true
       },
 
       _getFormParams: function(){
+
         const arr = this.$refs._group.$children;
         let obj ={};
         arr.map((child) => {
-          console.log(child.currentValue);
           obj[child.name] = child.currentValue;
         })
-        console.log('obj', obj);
-
         return obj;
 
       }
