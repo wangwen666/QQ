@@ -1,5 +1,5 @@
 
-const status = '1000';
+const status = '';
 
 const STATUS = {
   CODE: {

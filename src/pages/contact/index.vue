@@ -22,7 +22,6 @@
   import pullDown from '@/components/pullDown';
   import API from './../../configs/api.js';
   import STATUS from './../../configs/status.js';
-  import Axios from 'axios';
   import { Tab, TabItem, Swiper, SwiperItem, Cell, Group, CellBox } from 'vux'
 
   const list = () => ['好友', '群聊', '设备', '通讯录', '设备'];
@@ -42,12 +41,15 @@
     data: function () {
       return {
         list: list(),
-        group: [],
+        group: [{name: 'wode haoyou '}, {name: 2}],
         index: 0
       }
     },
     mounted() {
-      Axios.post( API.CONTACT.GET_GROUP, {userId: 'wangwen111'})
+
+      // localStorage.user = '';
+
+      this.$axios.get(API.CONTACT.GET_GROUP)
         .then((res) => {
           res = res.data;
           if(res.code === STATUS.CODE.S200) {
@@ -56,6 +58,9 @@
 
           }
         })
+    },
+    methods() {
+
     }
   };
 </script>

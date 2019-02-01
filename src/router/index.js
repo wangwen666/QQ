@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/pages/login/index'
+import Register from '@/pages/register/index'
+import FindPassword from '@/pages/findPassword/index'
 import Home from '@/pages/home/index'
 import Message from '@/pages/message/index'
 import Contact from '@/pages/contact/index'
+import View from '@/pages/view/index'
 
 Vue.use(Router)
 
@@ -17,6 +20,16 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register
+    },
+    {
+      path: '/findPassword',
+      name: 'findPassword',
+      component: FindPassword
     },
     {
       path: '/',
@@ -37,7 +50,14 @@ export default new Router({
             requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
           },
           component: Contact
-      }]
+        },{
+          path: '/view',
+          name: 'View',
+          meta: {
+            requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+          },
+          component: View
+        }]
     }
   ]
 })
