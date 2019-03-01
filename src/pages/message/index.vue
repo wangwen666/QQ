@@ -123,8 +123,23 @@
         <!--创建群聊-->
         <popup v-model="showCreateQun" height="100%">
           <div @click="showCreateQun = false" class="popup1">
-            111
+
           </div>
+        </popup>
+
+        <!--添加好友-->
+        <popup v-model="showAddFriend" position="right" width="100%" height="100%">
+          <v-add-friend :Back="back"></v-add-friend>
+
+
+
+
+
+          <div @click="showAddFriend  = false" class="popup1">
+
+          </div>
+
+
         </popup>
 
         <!--扫一扫-->
@@ -136,19 +151,45 @@
 
       </div>
 
-      <div v-for="c in cc" style="height: 100px">
-        c.name
+      <div style="margin-top: 46px">
+
+        <div class="msg-list" v-for="c in cc" :key="c.pid" @click="chat(c)">
+
+          <div class="msg-avatar">
+            <img :src="Img"/>
+          </div>
+
+          <div class="content">
+            <div>
+              <span class="name">{{c.name}}</span>
+              <span class="time">{{c.time}}</span>
+            </div>
+
+            <div>
+              <span class="msg">{{c.value}}</span>
+              <span class="num" :class="c.num ? '' : 'hid' ">{{c.num ? c.num : ''}}</span>
+            </div>
+
+          </div>
+
+
+        </div>
+
       </div>
 
-
+      <popup v-model="showChat" position="right" width="100%" style="background-color: white">
+        <v-chat :Pid="1" :Msg="this.msgs" :PersonName="personName" :backFun="this.back" ></v-chat>
+      </popup>
 
 
     </div>
 </template>
 <script>
 
-  import Vue from 'vue';
   import { TransferDom, Search, Group, Cell, XButton, Popup, Popover } from 'vux';
+  import Chat from '@/components/Chat';
+  import AddFriend from '@/components/AddFriend';
+
   import API from './../../configs/api.js';
 
 
@@ -163,41 +204,65 @@
       Cell,
       XButton,
       Popup,
-      Popover
+      Popover,
+      'v-chat': Chat,
+      'v-add-friend': AddFriend
     },
     data: function (){
       return {
         items: [],
         isShowUser: false,
         showCreateQun: false,
+        showAddFriend: false,
+        showChat: false,
         Img: require('./../../../static/QQ.png'),
-        cc: [
-          {name:1},
-          {name:11},
-          {name:111},
-          {name:1111},
-          {name:111},
-          {name:111},
-          {name:111},
-          {name:1},
-          {name:11},
-          {name:111},
-          {name:1},
-          {name:111},
-          {name:1},
-          {name:1},
-          {name:11},
-          {name:1},
-          {name:1},
-          {name:1}
-        ]
+        // cc: [
+        //   {name:1, id: 1},
+        //   {name:2, id: 2},
+        //   {name:3, id: 3},
+        //   {name:4, id: 4},
+        //   {name:5, id: 5},
+        //   {name:6, id: 6},
+        //   {name:7, id: 7},
+        //   {name:8, id: 8},
+        //   {name:9, id: 9}
+        // ],
+        msgs: [{
+          direction: 0,
+          mes: 123
+        }, {
+          direction: 1,
+          mes: 'askdcsljadfsdlfjlsdjflasjdljasdsjacfldsj;l'
+        }, {
+          direction: 0,
+          mes: 123
+        }, {
+          direction: 0,
+          mes: 'slkdsa'
+        }, {
+          direction: 1,
+          mes: 123
+        }, {
+          direction: 1,
+          mes: 123
+        }, {
+          direction: 0,
+          mes: 'slclsd'
+        }, {
+          direction: 1,
+          mes: 'sdkkasd'
+        }],
+
+        personName: '王文',
+
+        cc: this.$store.state.message.msg
 
       }
     },
     methods: {
       showUser(){
 
-        this.isShowUser = true
+        this.isShowUser = true;
 
         this.$axios.get(API.USER.GET_INFO)
           .then((res) => {
@@ -209,15 +274,14 @@
           .catch(() => {
 
           })
-
-
-
       },
       createQun() {
         console.log(123123);
         this.showCreateQun = true;
       },
       addFriend() {
+
+        this.showAddFriend = true;
 
       },
       scan() {
@@ -310,6 +374,19 @@
       },
       payMoney() {
 
+      },
+
+      chat (c) {
+        this.showChat = true;
+        console.log(c.name);
+
+        c.num = 0;
+
+      },
+      back () {
+        console.log(123);
+        this.showChat = false;
+        this.showAddFriend = false;
       }
     }
   };
@@ -452,6 +529,53 @@
       }
 
     }
+  }
+
+  .msg-list {
+    height: 80px;
+    display: flex;
+    background-color: white;
+    .msg-avatar {
+      width: 20%;
+      img{
+        height: 60px;
+        display: block;
+        margin: 8px auto auto;
+
+
+      }
+
+    }
+    .content {
+      width: 78%;
+      border-bottom: 1px solid #cccccc;
+      div {
+        height: 50%;
+        }
+        span:last-child{
+          float: right;
+        }
+        .num {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          color: white;
+          background-color: red;
+          text-align: center;
+        }
+        .hid {
+          display: none;
+        }
+      }
+
+      div:first-child{
+        span{
+          display: inline-block;
+          height: 100%;
+          line-height: 3;
+      }
+    }
+
   }
 
 

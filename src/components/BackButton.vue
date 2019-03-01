@@ -18,9 +18,18 @@
           type: Function
         }
       },
+      data() {
+        return {
+
+        }
+
+      },
+      methods: {
+
+      }
     }
 </script>
 
-<style scoped>
+<style  scoped>
 
 </style>

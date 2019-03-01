@@ -10,36 +10,9 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    // proxyTable: {
-    //   "/user": {
-    //     "target": "http://172.18.37.197:8090/springboot-user/user/",
-    //     "changeOrigin": true,
-    //     "pathRewrite": {
-    //       "^/user": "/"
-    //     }
-    //   },
-    //   "/view": {
-    //     "target": "http://localhost:3333/",
-    //     "pathRewrite": {
-    //       "^/view": "/"
-    //     }
-    //   },
-    //   "/contact": {
-    //     "target": "http://172.18.37.197:8090/springboot-user/",
-    //     "pathRewrite": {
-    //       "^/contact": "/"
-    //     }
-    //   },
-    //   "/etl": {
-    //     "target": "http://localhost:18080/etl/",
-    //     "pathRewrite": {
-    //       "^/etl": "/"
-    //     }
-    //   }
-    // },
     proxyTable: {
       "/user": {
-        "target": "http://localhost:3000/user/",
+        "target": "http://localhost:3333/user/",
         "changeOrigin": true,
         "pathRewrite": {
           "^/user": "/"
@@ -52,7 +25,7 @@ module.exports = {
         }
       },
       "/contact": {
-        "target": "http://localhost:3000/contact/",
+        "target": "http://localhost:3333/contact/",
         "pathRewrite": {
           "^/contact": "/"
         }

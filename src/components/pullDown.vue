@@ -9,7 +9,7 @@
       <template v-if="showContent">
         <cell-box class="sub-item" v-for="(item, index) in groupDetail" :key="index"
                   @click.native="showPersonMsg(item.uid)">
-          <img :src="item.src"/>
+          <img :src="Img" style="width: 20px; height: 20px"/>
           <div>
             <p>{{item.name}}</p>
             <p>{{item.description}}</p>
@@ -19,6 +19,7 @@
     </group>
 
     <div v-transfer-dom>
+      <!--用户信息-->
       <popup v-model="contactDetailShow" position="right" width="100%">
         <div class="person-detail">
 
@@ -69,11 +70,10 @@
                 <i class="iconfont icon-kongjian"></i>他的空间
               </p>
 
-
             </div>
 
-
           </div>
+
           <div class="person-detail-footer">
 
             <x-button mini @click.native="takePhone">QQ电话
@@ -88,8 +88,9 @@
         </div>
       </popup>
 
+      <!--聊天界面-->
       <popup v-model="contactWindowShow" position="right" width="100%">
-        <div class="position-horizontal-demo">
+        <div class="dialogue">
 
           <div>
             <span @click="contactWindowShow = false"> 返回 </span>
@@ -112,7 +113,7 @@
 
             <div v-if="dia.direction === 1" style="float: right; display: block; clear: both">
               <img class="avatar" :src="Img" alt="头像" style="float: right">
-              <div class="dialogue-right"
+              <div class="dialogue-right sending" :class="hasSend"
                    style="display: inline-block; max-width: 200px; background-color: #04be02; word-wrap:break-word">
                 {{dia.mes}}
               </div>
@@ -122,7 +123,7 @@
 
           </div>
 
-          <group style="position: fixed; bottom: 0; width: 100%">
+          <group ref="groups" style="position: fixed; bottom: 0; width: 100%">
             <x-input @on-enter="send"></x-input>
           </group>
 
@@ -174,25 +175,29 @@
         contactWindowShow: false,
         Img: require('./../../static/QQ.png'),
         backgroundImg: require('./../../static/background.jpg'),
+        loading: require('./../../static/loading.gif'),
         groupDetail: [
-          {title: 1, description: 11},
-          {title: 2, description: 12},
-          {title: 3, description: 1212},
-          {title: 4, description: 123}
+          {title: 1, description: 11, id: 1},
+          {title: 2, description: 12, id: 2},
+          {title: 3, description: 1212, id: 3},
+          {title: 4, description: 123, id: 4}
         ],
-        dialogueArray: []
+        dialogueArray: [],
+        hasSend: 'sending',
+        sid: 0, // 保留对话 id,
+        personMsg: {}
       };
     },
     methods: {
-      showDetail() {
+      showDetail () {
         this.detailShow = true;
       },
 
-      hiddenDetail() {
+      hiddenDetail () {
         this.detailShow = false;
       },
 
-      showGroupPerson(id) {
+      showGroupPerson (id) {
 
         this.isActive = !this.isActive;
         this.showContent = !this.showContent;
@@ -201,6 +206,13 @@
 
           this.$axios.post(API.CONTACT.GROUP_DETAIL, {id})
             .then((res) => {
+              res = res.data;
+              console.log(res.data);
+              if(res.code === STATUS.CODE.S200) {
+
+                this.groupDetail = res.data;
+
+              }
 
             })
             .catch((res) => {
@@ -210,9 +222,26 @@
         }
 
       },
-      showPersonMsg() {
+      showPersonMsg(id) {
         this.contactDetailShow = true;
+        this.sid = id;
+
+        this.$axios.post(API.CONTACT.GET_PERSON_MSG, {id})
+          .then((res) => {
+            res = res.data;
+
+            if(res.code === STATUS.CODE.S200) {
+              this.personMsg = res.data;
+            }
+
+          })
+          .catch((res) => {
+
+          })
+
+
       },
+
       sendMessage(id) {
 
         const arr = [{
@@ -241,26 +270,38 @@
           mes: 'sdkkasd'
         }];
 
-        localStorage.setItem('user', JSON.stringify(arr));
-
-        // const usr = localStorage.getItem('user');
-
-        this.dialogueArray = JSON.parse(localStorage.getItem('user'));
-
         this.contactDetailShow = false;
         this.contactWindowShow = true;
       },
-      send(value, $event) {
-        const ws = WebSocket('ws://127.0.0.1:8001/ws');
-        ws.onopen = function () {
-          // 使用 send() 方法发送数据
-          ws.send('{\"code\":\"100001\",\"fr\":' + '\"' + value + '\"' + '}');
-          // ws.send({
-          //   code: "100001",
-          //   fr: value
-          // });
-          console.log('发送数据');
-        };
+
+      send (value, $event) {
+
+        const  data = {
+          uid: localStorage.getItem('user'),
+          sid: this.sid,
+          value: value,
+          name: localStorage.getItem('name'),
+          time: new Date().getTime()
+        }
+
+
+        console.log(localStorage.getItem('user'));
+
+        this.ws.send(JSON.stringify(data));
+
+        this.$refs.groups.$children.forEach((child) => {
+          child.reset()
+        });
+
+        this.dialogueArray.push({
+          direction: 1,
+          mes: value
+        });
+
+        const that = this;
+
+
+
       }
     },
     created() {
@@ -368,6 +409,8 @@
       }
     }
 
+
+
     .person-detail-footer {
       bottom: 0;
       width: 100%;
@@ -385,6 +428,30 @@
 
     }
   }
+
+  .dialogue {
+    position: relative;
+    .sending{
+      color: #10aeff
+
+    }
+    .sending:before {
+      content:'';
+      background-image: url('./../../static/loading.gif');
+      background-size:10px 20px;
+      width:10px;
+      height:20px;
+      position: absolute;
+      z-index: 100;
+      top: -10px;
+
+    }
+
+    .fail {
+
+    }
+  }
+
 
 </style>
 

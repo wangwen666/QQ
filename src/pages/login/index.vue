@@ -29,6 +29,8 @@
   import {AlertPlugin} from 'vux';
   import API from './../../configs/api.js';
   import STATUS from './../../configs/status.js';
+  import WebSocket from './../../lib/websocket.js';
+
 
   Vue.use(AlertPlugin);
 
@@ -47,13 +49,13 @@
      return {
        Img: require('./../../../static/QQ.png'),
        selfValid: function (value) {
-         console.log(value);
          return {
            valid: value.length > 0,
            msg: '输入错误'
          }
-
        },
+
+       msgs: this.$store.state.message.msg
 
      }
     },
@@ -69,16 +71,74 @@
 
         const params = this._getFormParams();
 
+        const that = this;
+
         this.$axios.post(API.USER.LOGIN, params)
           .then( (res) => {
             res = res.data;
-
             if (res.code === STATUS.CODE.S200) {
-              console.log(123123);
-              localStorage.user = 'ww';
+
+              localStorage.user = res.data.id;
+              localStorage.name = res.data.name;
+
+              console.log(localStorage.user);
+
               this.$router.push(
                 { path: '/message' }
-                );
+              );
+
+              console.log(this.$store.state.message.msg);
+
+
+              // 登录成功后建立websocket连接
+              const url = 'ws://127.0.0.1:8001/' + res.data.id;
+
+              // const ws = WebSocket(url);
+              Vue.prototype.ws = WebSocket(url);
+
+              this.ws.onopen = function () {
+                console.log('发送数据');
+              };
+
+              this.ws.onmessage = function (e) {
+                console.log('得到数据');
+                console.log(e.data);
+
+
+                // 拿到传过来的数据
+                /*
+                *  1、判断是否是新的聊天 id
+                *  2、新聊天 创建一个新；否则 找到对应的聊天置顶，同时如何放入信息放入信息
+                *
+                *
+                *  注: 登录成功后从redis里面拉数据 （如何实现）
+                * */
+
+                const data = JSON.parse(e.data);
+
+                let had =  false;
+
+                that.msgs.map((item, index) => {
+                  if (data.uid === item.uid) {
+                    that.msgs.splice(index, 1);
+                    that.msgs.unshift(data);
+                    item.num++;
+                    had = true;
+                    console.log(1231);
+
+                    return false;
+                  }
+                })
+
+                if (!had) {
+                  data.num = 1;
+                  that.msgs.unshift(data)
+                }
+
+                // console.log(this.$store);
+                // this.$store.state.count
+
+              }
             } else {
               this.$vux.alert.show({
                 title: '提示',

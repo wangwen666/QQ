@@ -2,16 +2,31 @@
     <div>
       <div>
         <tab :scroll-threshold="5" :line-width=2 active-color='#fc378c' v-model="index">
-          <tab-item class="vux-center" :selected="index === 0" v-for="(item, index) in list"
-                    @click="index = item" :key="index">
+          <tab-item class="vux-center" :selected="index === 0" v-for="(item, index) in lists" @click.native="changeTab(index)" :key="index">
             {{item}}
           </tab-item>
         </tab>
-        <swiper aspect-ratio=1 v-model="index" :show-dots="false">
-          <swiper-item >
-            <v-pullDown v-for="(item, index) in group" :key="index" v-bind:Group="item"></v-pullDown>
+
+        <swiper v-model="index" :show-dots="false">
+
+          <swiper-item key='0'>
+            <v-pullDown v-for="(item, index) in friendChat" :key="index" v-bind:Group="item"></v-pullDown>
           </swiper-item>
+
+
+          <swiper-item key='1'>
+            <v-pullDown v-for="(item, index) in qunChat" :key="index" v-bind:Group="item"></v-pullDown>
+          </swiper-item>
+
+          <swiper-item key='2'>
+            <!--<v-pullDown v-for="(item, index) in group" :key="index" v-bind:Group="item"></v-pullDown>-->
+            <div  class="tab-swiper vux-center">56</div>
+          </swiper-item>
+
         </swiper>
+
+
+
       </div>
 
     </div>
@@ -24,7 +39,8 @@
   import STATUS from './../../configs/status.js';
   import { Tab, TabItem, Swiper, SwiperItem, Cell, Group, CellBox } from 'vux'
 
-  const list = () => ['好友', '群聊', '设备', '通讯录', '设备'];
+  const lists = () => ['好友', '群聊', '设备', '通讯录', '公众号'];
+  const quns = () => ['未命名的群聊', '我创建的群聊', '我管理的群聊', '我加入的群聊'];
 
   export default {
     name: 'Contact',
@@ -40,9 +56,14 @@
     },
     data: function () {
       return {
-        list: list(),
-        group: [{name: 'wode haoyou '}, {name: 2}],
-        index: 0
+        lists: lists(),
+        index: 0,
+        friendChat: [],
+        qunChat: [],
+        device: [],
+        mailList: [],
+        gongzhonghao: [],
+
       }
     },
     mounted() {
@@ -53,13 +74,56 @@
         .then((res) => {
           res = res.data;
           if(res.code === STATUS.CODE.S200) {
-            this.group = res.data;
+            this.friendChat = res.data;
           } else {
 
           }
         })
+        .catch((err) => {
+          console.log(err);
+        })
     },
-    methods() {
+    methods: {
+
+      changeTab (index) {
+
+        let sql = '';
+
+        const arr = [this.friendChat, this.qunChat, this.device, this.mailList, this.gongzhonghao];
+
+
+        switch (index) {
+          case 1:
+            sql = API.CONTACT.GET_QUN;
+            break;
+          case 2:
+            sql = API.CONTACT.GET_DEVICE;
+            break;
+          case 3:
+            sql = API.CONTACT.GET_MAIL_LIST;
+            break;
+          case 4:
+            sql = API.CONTACT.GET_PUBLIC;
+            break;
+          default:
+            sql = API.CONTACT.GET_GROUP;
+            break;
+        }
+
+        this.$axios.get(sql)
+          .then((res) => {
+            res = res.data;
+            if(res.code === STATUS.CODE.S200) {
+              arr[index] = res.data;
+            } else {
+
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+
+      }
 
     }
   };
